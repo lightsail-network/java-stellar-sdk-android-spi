@@ -1,0 +1,1 @@
+You need to place stellar-sdk-android-spi.jar into this folder.
