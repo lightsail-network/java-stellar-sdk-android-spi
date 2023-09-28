@@ -30,7 +30,7 @@ repositories {
 
 dependencies {
     // TODO: update version from jitpack
-    implementation("com.github.overcat:java-stellar-sdk:d423f57048f33b6fb717efd707f05d4a69664d43")
+    implementation("com.github.stellar:java-stellar-sdk:master-SNAPSHOT")
 }
 
 tasks {

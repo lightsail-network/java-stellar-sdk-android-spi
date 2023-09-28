@@ -68,7 +68,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation(files("libs/stellar-sdk-android-spi.jar"))
     // TODO: update version from jitpack
-    implementation("com.github.overcat:java-stellar-sdk:d423f57048f33b6fb717efd707f05d4a69664d43")
+    implementation("com.github.stellar:java-stellar-sdk:master-SNAPSHOT")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0-alpha03")
