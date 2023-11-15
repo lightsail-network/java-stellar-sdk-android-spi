@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "stellar"
-version = "0.41.1"
+version = "0.42.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.stellar:java-stellar-sdk:0.41.1")
+    implementation("com.github.stellar:java-stellar-sdk:0.42.0")
 }
 
 tasks {
