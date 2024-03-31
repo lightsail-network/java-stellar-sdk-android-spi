@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.43.1
+* Bump `java-stellar-sdk` from 0.43.0 to 0.43.1. ([#4](https://github.com/lightsail-network/java-stellar-sdk-android-spi/pull/4))
+* Publish the publication to Maven Central. ([#4](https://github.com/lightsail-network/java-stellar-sdk-android-spi/pull/4))
+* Build the project with JDK 21. ([#4](https://github.com/lightsail-network/java-stellar-sdk-android-spi/pull/4))
+
 ## 0.43.0
 * Bump `java-stellar-sdk` from 0.42.0 to 0.43.0
 
