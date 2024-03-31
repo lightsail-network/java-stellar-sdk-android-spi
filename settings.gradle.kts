@@ -1,2 +1,2 @@
-rootProject.name = "java-stellar-sdk-android-spi"
+rootProject.name = "stellar-sdk-android-spi"
 
