@@ -54,10 +54,9 @@ jobs:
       fail-fast: false
       matrix:
         # minSdk and targetSdk, see ${project_root}/android_test/app/build.gradle.kts
-        # TODO: Investigate why it is unstable on API 33.
         emulator: [
           { api-level: 23, target: google_apis },
-          { api-level: 32, target: playstore }
+          { api-level: 34, target: playstore }
         ]
     steps:
       - name: checkout
