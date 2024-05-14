@@ -15,14 +15,14 @@ higher, you do not need to include this library.
 <dependency>
     <groupId>network.lightsail</groupId>
     <artifactId>stellar-sdk-android-spi</artifactId>
-    <version>0.43.2</version>
+    <version>0.44.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'network.lightsail:stellar-sdk-android-spi:0.43.2'
+implementation 'network.lightsail:stellar-sdk-android-spi:0.44.0'
 ```
 
 The versions of `java-stellar-sdk` and `java-stellar-sdk-android-spi` should be maintained at the same version.

@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "network.lightsail"
-version = "0.43.2"
+version = "0.44.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation("network.lightsail:stellar-sdk:0.43.2")
+    implementation("network.lightsail:stellar-sdk:0.44.0")
 }
 
 tasks {
