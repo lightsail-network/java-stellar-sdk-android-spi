@@ -5,11 +5,11 @@ plugins {
     id("project-report")
     id("com.diffplug.spotless") version "6.21.0"
     id("com.github.ben-manes.versions") version "0.48.0"
-    id("com.gradleup.nmcp") version "0.0.4"
+    id("com.gradleup.nmcp") version "0.0.9"
 }
 
 group = "network.lightsail"
-version = "0.44.0"
+version = "1.0.0-alpha0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation("network.lightsail:stellar-sdk:0.44.0")
+    implementation("network.lightsail:stellar-sdk:1.0.0-alpha0")
 }
 
 tasks {
