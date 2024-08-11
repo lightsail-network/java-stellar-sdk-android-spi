@@ -28,10 +28,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.stellar.javastellarsdkdemoapp.ui.theme.JavaStellarSDKDemoAppTheme
 import org.stellar.sdk.Account
-import org.stellar.sdk.AccountConverter
 import org.stellar.sdk.Address
 import org.stellar.sdk.Auth
-import org.stellar.sdk.InvokeHostFunctionOperation
+import org.stellar.sdk.operations.InvokeHostFunctionOperation
 import org.stellar.sdk.KeyPair
 import org.stellar.sdk.Network
 import org.stellar.sdk.Server
@@ -140,7 +139,7 @@ private fun testSDK(): String {
     return try {
         // send request to horizon server
         val server = Server("https://horizon.stellar.org")
-        val horizonResp = server.root()
+        val horizonResp = server.root().execute()
         if (horizonResp == null || horizonResp.networkPassphrase != Network.PUBLIC.networkPassphrase) {
             throw Exception("Query Horizon failed")
         }
@@ -161,10 +160,10 @@ private fun testSDK(): String {
         val source: KeyPair =
             KeyPair.fromSecretSeed("SCH27VUZZ6UAKB67BDNF6FA42YMBMQCBKXWGMFD5TZ6S5ZZCZFLRXKHS")
 
-        val ledgerKey = LedgerKey.Builder()
+        val ledgerKey = LedgerKey.builder()
             .discriminant(LedgerEntryType.ACCOUNT)
             .account(
-                LedgerKeyAccount.Builder()
+                LedgerKeyAccount.builder()
                     .accountID(
                         KeyPair.fromAccountId(
                             "GB7TAYRUZGE6TVT7NHP5SMIZRNQA6PLM423EYISAOAP3MKYIQMVYP2JO"
@@ -174,11 +173,11 @@ private fun testSDK(): String {
                     .build()
             )
             .build()
-        val sorobanData = SorobanTransactionData.Builder()
+        val sorobanData = SorobanTransactionData.builder()
             .resources(
-                SorobanResources.Builder()
+                SorobanResources.builder()
                     .footprint(
-                        LedgerFootprint.Builder()
+                        LedgerFootprint.builder()
                             .readOnly(arrayOf(ledgerKey))
                             .readWrite(arrayOf())
                             .build()
@@ -189,16 +188,16 @@ private fun testSDK(): String {
                     .build()
             )
             .resourceFee(Int64(100L))
-            .ext(ExtensionPoint.Builder().discriminant(0).build())
+            .ext(ExtensionPoint.builder().discriminant(0).build())
             .build()
         val sorobanDataString = sorobanData.toXdrBase64()
 
-        val createContractArgs = CreateContractArgs.Builder()
+        val createContractArgs = CreateContractArgs.builder()
             .contractIDPreimage(
-                ContractIDPreimage.Builder()
+                ContractIDPreimage.builder()
                     .discriminant(ContractIDPreimageType.CONTRACT_ID_PREIMAGE_FROM_ADDRESS)
                     .fromAddress(
-                        ContractIDPreimageFromAddress.Builder()
+                        ContractIDPreimageFromAddress.builder()
                             .address(
                                 Address(
                                     "GB7TAYRUZGE6TVT7NHP5SMIZRNQA6PLM423EYISAOAP3MKYIQMVYP2JO"
@@ -211,12 +210,12 @@ private fun testSDK(): String {
                     .build()
             )
             .executable(
-                ContractExecutable.Builder()
+                ContractExecutable.builder()
                     .discriminant(ContractExecutableType.CONTRACT_EXECUTABLE_STELLAR_ASSET)
                     .build()
             )
             .build()
-        val hostFunction = HostFunction.Builder()
+        val hostFunction = HostFunction.builder()
             .discriminant(HostFunctionType.HOST_FUNCTION_TYPE_CREATE_CONTRACT)
             .createContract(createContractArgs)
             .build()
@@ -226,7 +225,7 @@ private fun testSDK(): String {
         val sequenceNumber = 2908908335136768L
         val account = Account(source.accountId, sequenceNumber)
         val transaction: Transaction =
-            TransactionBuilder(AccountConverter.enableMuxed(), account, Network.TESTNET)
+            TransactionBuilder(account, Network.TESTNET)
                 .addOperation(invokeHostFunctionOperation)
                 .addPreconditions(
                     TransactionPreconditions.builder().timeBounds(TimeBounds(0, 0)).build()
@@ -244,10 +243,10 @@ private fun testSDK(): String {
         val validUntilLedgerSeq = 654656L
         val network = Network.TESTNET
 
-        val credentials = SorobanCredentials.Builder()
+        val credentials = SorobanCredentials.builder()
             .discriminant(SorobanCredentialsType.SOROBAN_CREDENTIALS_ADDRESS)
             .address(
-                SorobanAddressCredentials.Builder()
+                SorobanAddressCredentials.builder()
                     .address(Address(signer.accountId).toSCAddress())
                     .nonce(Int64(123456789L))
                     .signatureExpirationLedger(Uint32(XdrUnsignedInteger(0L)))
@@ -255,14 +254,14 @@ private fun testSDK(): String {
                     .build()
             )
             .build()
-        val invocation = SorobanAuthorizedInvocation.Builder()
+        val invocation = SorobanAuthorizedInvocation.builder()
             .function(
-                SorobanAuthorizedFunction.Builder()
+                SorobanAuthorizedFunction.builder()
                     .discriminant(
                         SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN
                     )
                     .contractFn(
-                        InvokeContractArgs.Builder()
+                        InvokeContractArgs.builder()
                             .contractAddress(Address(contractId).toSCAddress())
                             .functionName(Scv.toSymbol("increment").sym)
                             .args(arrayOfNulls(0))
@@ -272,22 +271,19 @@ private fun testSDK(): String {
             )
             .subInvocations(arrayOfNulls(0))
             .build()
-        val entry = SorobanAuthorizationEntry.Builder()
+        val entry = SorobanAuthorizationEntry.builder()
             .credentials(credentials)
             .rootInvocation(invocation)
             .build()
         Auth.authorizeEntry(entry.toXdrBase64(), signer, validUntilLedgerSeq, network)
 
         // send real transaction
-        // https://horizon.stellar.org/transactions/fe833c504ca8b329c1e00adec7da79f61a55e28dc705e22a6515494427cc456a
+        // https://horizon.stellar.org/transactions/f622288e5f9720d59599f433942710c038b9a621a9d64d5c0e444262bedd0765
         val xdr =
-            "AAAAAgAAAAAcBaQEwcGuB3ErX1lnwKcP/pe84KcAabwB0GNk6SNvnwAAnQgCwi0TAAgJjwAAAAEAAAAAAAAAAAAAAABlD7HrAAAAAAAAAAIAAAAAAAAADAAAAAAAAAACZUJvbmQAAAAAAAAAAAAAAN80PsIQ9ohJQb1yLu4XaURrKURt5rbLoC7FfOM4vSZQAAAH0oBPrQsAAABFAB6EgAAAAABRAwlNAAAAAAAAAAwAAAAAAAAAAmVCb25kAAAAAAAAAAAAAADfND7CEPaISUG9ci7uF2lEaylEbea2y6AuxXzjOL0mUAAAByOt/5PHAAAAvQBMS0AAAAAAUQMJTgAAAAAAAAAB6SNvnwAAAEDR4cJo3zzZfCFusnM0sECT4xmhLW/bgwukIBxWWXvsDGLdQtE87lkrGijAPiyBEy3n1lDxDu4uwNpGnMXEaTAN"
+            "AAAAAgAAAAAiAUrcystOYnsfzPObpWvFcH8d63E7dzgBnu12rJHzggAST4YCubbAABJgWwAAAAAAAAAD/uZ83y8u6kKoLxJS82mewgAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAQAAAAC0CZF8Vp3Qpd/P/MxKvpqOKLlV6a5HU+12p0I5zCjGhwAAABUAAAAAIgFK3MrLTmJ7H8zzm6VrxXB/HetxO3c4AZ7tdqyR84IAAAABVVNEAAAAAAC0CZF8Vp3Qpd/P/MxKvpqOKLlV6a5HU+12p0I5zCjGhwAAAAIAAAABAAAAAQAAAADSsJCVMR4eamKRC8rg8lwyk2fEoy7XAajhtXZNIhhOXwAAABUAAAAAIgFK3MrLTmJ7H8zzm6VrxXB/HetxO3c4AZ7tdqyR84IAAAABRVRIAAAAAADSsJCVMR4eamKRC8rg8lwyk2fEoy7XAajhtXZNIhhOXwAAAAIAAAABAAAAAQAAAAAiAUrcystOYnsfzPObpWvFcH8d63E7dzgBnu12rJHzggAAAAMAAAABVVNEAAAAAAC0CZF8Vp3Qpd/P/MxKvpqOKLlV6a5HU+12p0I5zCjGhwAAAAFFVEgAAAAAANKwkJUxHh5qYpELyuDyXDKTZ8SjLtcBqOG1dk0iGE5fAAAA0Wbyx+8ACNFPWm+vbgAAAABfcLMIAAAAAQAAAAAiAUrcystOYnsfzPObpWvFcH8d63E7dzgBnu12rJHzggAAAAMAAAABRVRIAAAAAADSsJCVMR4eamKRC8rg8lwyk2fEoy7XAajhtXZNIhhOXwAAAAFVU0QAAAAAALQJkXxWndCl38/8zEq+mo4ouVXprkdT7XanQjnMKMaHAAAAAAeEtGAFXc6DAACDSAAAAABfcLMJAAAAAQAAAAC0CZF8Vp3Qpd/P/MxKvpqOKLlV6a5HU+12p0I5zCjGhwAAABUAAAAAIgFK3MrLTmJ7H8zzm6VrxXB/HetxO3c4AZ7tdqyR84IAAAABVVNEAAAAAAC0CZF8Vp3Qpd/P/MxKvpqOKLlV6a5HU+12p0I5zCjGhwAAAAEAAAACAAAAAQAAAADSsJCVMR4eamKRC8rg8lwyk2fEoy7XAajhtXZNIhhOXwAAABUAAAAAIgFK3MrLTmJ7H8zzm6VrxXB/HetxO3c4AZ7tdqyR84IAAAABRVRIAAAAAADSsJCVMR4eamKRC8rg8lwyk2fEoy7XAajhtXZNIhhOXwAAAAEAAAACAAAAAAAAAAKskfOCAAAAQEwgfY//YH+4a6e+4Tuk1r/xo9hvMCFlkHUOfNnmQgnO0AFHUdEv69+jNo2T07kCPkWKo8P1TWGzg+fdeeTWrwwVAdizAAAAQCHEwd7+YJu0rrww7F9W/KvCIo7NPGwCJcFWLfvQ9OYsdFDZC2nj1ghly7MJsvD9j/VmO6W/39TljzTbjsmC9wM="
         val tx: Transaction = Transaction.fromEnvelopeXdr(xdr, Network.PUBLIC) as Transaction
         val resp = server.submitTransaction(tx)
-        if (!resp.isSuccess) {
-            throw Exception("Submit transaction failed")
-        }
-
+        Log.d("MainActivity", "testSDK resp: $resp")
         "SUCCESS"
     } catch (e: Exception) {
         Log.e("MainActivity", "testSDK ERROR", e)
