@@ -160,7 +160,6 @@ private fun testSDK(): String {
         // build and parse transaction
         val source: KeyPair =
             KeyPair.fromSecretSeed("SCH27VUZZ6UAKB67BDNF6FA42YMBMQCBKXWGMFD5TZ6S5ZZCZFLRXKHS")
-
         // test mnemonic4j
         val mnemonic = Mnemonic()
         val words = mnemonic.generate(256)
@@ -169,7 +168,6 @@ private fun testSDK(): String {
         if (kp.secretSeed == null) {
             throw Exception("test mnemonic4j failed")
         }
-
         val ledgerKey = LedgerKey.builder()
             .discriminant(LedgerEntryType.ACCOUNT)
             .account(
