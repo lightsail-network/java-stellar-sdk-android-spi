@@ -1,6 +1,9 @@
 # Changelog
 
 ## 1.0.0-alpha0
+* Bump `java-stellar-sdk` from 1.0.0-alpha0 to 1.0.0-beta0
+
+## 1.0.0-alpha0
 * Bump `java-stellar-sdk` from 0.44.0 to 1.0.0-alpha0
 
 ## 0.44.0
