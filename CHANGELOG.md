@@ -6,6 +6,9 @@
 ## 1.0.0-alpha0
 * Bump `java-stellar-sdk` from 0.44.0 to 1.0.0-alpha0
 
+## 0.44.1
+* Bump `java-stellar-sdk` from 0.44.0 to 0.44.1
+
 ## 0.44.0
 * Bump `java-stellar-sdk` from 0.43.2 to 0.44.0
 
