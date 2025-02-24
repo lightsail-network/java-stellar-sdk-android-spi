@@ -15,7 +15,7 @@ higher, you do not need to include this library.
 <dependency>
     <groupId>network.lightsail</groupId>
     <artifactId>stellar-sdk-android-spi</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
