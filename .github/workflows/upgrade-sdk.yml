@@ -32,7 +32,7 @@ jobs:
       - name: Update CHANGELOG.md
         run: |
           sed -i '/# Changelog/a \
-      ## ${{ inputs.sdk_version }}\n* Bump `java-stellar-sdk` from ${{ steps.get_old_version.outputs.old_version }} to ${{ inputs.sdk_version }}' CHANGELOG.md
+      ## "${{ inputs.sdk_version }}"\n* Bump `java-stellar-sdk` from "${{ steps.get_old_version.outputs.old_version }}" to "${{ inputs.sdk_version }}"' CHANGELOG.md
       - name: Determine release type
         id: release_info
         run: |
