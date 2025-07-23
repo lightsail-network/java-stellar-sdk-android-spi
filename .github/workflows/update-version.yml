@@ -36,11 +36,6 @@ jobs:
             echo "prefix=release" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create feature branch
-        run: |
-          BRANCH_NAME="update-version-${{ inputs.version }}"
-          git checkout -b "$BRANCH_NAME"
-
       - name: Update build.gradle.kts (root)
         run: |
           # Get current version from build.gradle.kts
@@ -101,20 +96,12 @@ jobs:
           # Clean up
           rm -f current_version.txt
 
-      - name: Commit changes
-        run: |
-          git add build.gradle.kts README.md android_test/app/build.gradle.kts CHANGELOG.md
-          git commit -m "${{ steps.pr-prefix.outputs.prefix }}: ${{ inputs.version }}"
-
-      - name: Push changes
-        run: |
-          git push origin "update-version-${{ inputs.version }}"
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-version-${{ inputs.version }}
+          commit-message: "${{ steps.pr-prefix.outputs.prefix }}: ${{ inputs.version }}"
           title: "${{ steps.pr-prefix.outputs.prefix }}: ${{ inputs.version }}"
           body: |
             This PR updates the java-stellar-sdk version to ${{ inputs.version }}.
