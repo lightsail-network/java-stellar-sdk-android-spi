@@ -1,0 +1,56 @@
+name: Upgrade Stellar SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      sdk_version:
+        description: "The new java-stellar-sdk version (e.g., 0.40.0)"
+        required: true
+        type: string
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get old SDK version
+        id: get_old_version
+        run: |
+          OLD_VERSION=$(grep 'implementation("org.stellar:java-stellar-sdk:' build.gradle.kts | sed -E 's/.*:([^"]+)".*/\1/')
+          echo "old_version=$OLD_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update version in root build.gradle.kts
+        run: |
+          sed -i -E "s/(implementation\(\"org.stellar:java-stellar-sdk:)[^\"]+(\"\))/${{ inputs.sdk_version }}\2/g" build.gradle.kts
+
+      - name: Update version in android_test build.gradle.kts
+        run: |
+          sed -i -E "s/(implementation\(\"org.stellar:java-stellar-sdk:)[^\"]+(\"\))/${{ inputs.sdk_version }}\2/g" android_test/build.gradle.kts
+
+      - name: Update CHANGELOG.md
+        run: |
+          sed -i '/# Changelog/a \
+      ## ${{ inputs.sdk_version }}\n* Bump `java-stellar-sdk` from ${{ steps.get_old_version.outputs.old_version }} to ${{ inputs.sdk_version }}' CHANGELOG.md
+      - name: Determine release type
+        id: release_info
+        run: |
+          if [[ "${{ inputs.sdk_version }}" == *-* ]]; then
+            echo "prefix=pre-release" >> $GITHUB_OUTPUT
+          else
+            echo "prefix=release" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "${{ steps.release_info.outputs.prefix }}: ${{ inputs.sdk_version }}"
+          branch: "${{ steps.release_info.outputs.prefix }}/${{ inputs.sdk_version }}"
+          delete-branch: true
+          title: "${{ steps.release_info.outputs.prefix }}: ${{ inputs.sdk_version }}"
+          body: |
+            This PR was automatically created by a GitHub Action.
+
+            It updates `java-stellar-sdk` to version `${{ inputs.sdk_version }}` and bumps the project version to `${{ inputs.sdk_version }}`.
