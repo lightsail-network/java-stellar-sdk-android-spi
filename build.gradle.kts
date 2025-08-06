@@ -9,11 +9,12 @@ plugins {
 }
 
 group = "network.lightsail"
-version = "2.0.0-beta1"
+version = "2.0.0-beta2"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
     withJavadocJar()
     withSourcesJar()
 }
@@ -31,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    implementation("network.lightsail:stellar-sdk:2.0.0-beta1")
+    implementation("network.lightsail:stellar-sdk:2.0.0-beta2")
 }
 
 tasks {

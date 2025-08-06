@@ -282,6 +282,7 @@ private fun testSDK(): String {
         Auth.authorizeEntry(entry.toXdrBase64(), signer, validUntilLedgerSeq, network)
 
         // send real transaction
+        // https://horizon.stellar.org/transactions/fe833c504ca8b329c1e00adec7da79f61a55e28dc705e22a6515494427cc456a
         val xdr =
             server.transactions().limit(1).includeFailed(false).execute().records.get(0).envelopeXdr
         val tx: Transaction = Transaction.fromEnvelopeXdr(xdr, Network.PUBLIC) as Transaction
