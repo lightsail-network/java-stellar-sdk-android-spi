@@ -3,9 +3,9 @@ plugins {
     id("signing")
     id("maven-publish")
     id("project-report")
-    id("com.diffplug.spotless") version "6.25.0"
-    id("com.github.ben-manes.versions") version "0.51.0"
-    id("com.gradleup.nmcp") version "0.0.9"
+    id("com.diffplug.spotless") version "7.2.1"
+    id("com.github.ben-manes.versions") version "0.52.0"
+    id("com.gradleup.nmcp.aggregation").version("1.0.2")
 }
 
 group = "network.lightsail"
@@ -107,14 +107,16 @@ signing {
     sign(publishing.publications["mavenJava"])
 }
 
-nmcp {
-    // https://github.com/GradleUp/nmcp
-    publishAllProjectsProbablyBreakingProjectIsolation {
+nmcpAggregation {
+    centralPortal {
         username = System.getenv("SONATYPE_USERNAME")
         password = System.getenv("SONATYPE_PASSWORD")
         // publish manually from the portal
-        publicationType = "USER_MANAGED"
+        publishingType = "USER_MANAGED"
         // or if you want to publish automatically
-        // publicationType = "AUTOMATIC"
+        // publishingType = "AUTOMATIC"
     }
+
+    // Publish all projects that apply the 'maven-publish' plugin
+    publishAllProjectsProbablyBreakingProjectIsolation()
 }
