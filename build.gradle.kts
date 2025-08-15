@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "network.lightsail"
-version = "2.0.0-beta3"
+version = "2.0.0"
 
 java {
     toolchain {
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    implementation("network.lightsail:stellar-sdk:2.0.0-beta3")
+    implementation("network.lightsail:stellar-sdk:2.0.0")
 }
 
 tasks {
