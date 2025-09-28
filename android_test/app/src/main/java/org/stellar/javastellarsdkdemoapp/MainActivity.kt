@@ -135,25 +135,96 @@ fun MainPreview() {
     }
 }
 
+class MainActivity : ComponentActivity() {
+    private lateinit var sdkTestViewModel: SdkTestViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        sdkTestViewModel = ViewModelProvider(this).get(SdkTestViewModel::class.java)
+
+        setContent {
+            JavaStellarSDKDemoAppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Main(sdkTestViewModel)
+                }
+            }
+        }
+    }
+}
+
+class SdkTestViewModel : ViewModel() {
+    private val _result = mutableStateOf<String?>(null)
+    val result: String? get() = _result.value
+
+    fun runSDKTest() {
+        viewModelScope.launch {
+            _result.value = withContext(Dispatchers.IO) {
+                testSDK()
+            }
+        }
+    }
+}
+
+@Composable
+fun Main(sdkTestViewModel: SdkTestViewModel, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            onClick = { sdkTestViewModel.runSDKTest() }
+        ) {
+            Text(text = "Run Test")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = sdkTestViewModel.result ?: "Not Run",
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainPreview() {
+    JavaStellarSDKDemoAppTheme {
+        val sdkTestViewModel = SdkTestViewModel()
+        Main(sdkTestViewModel)
+    }
+}
+
 private fun testSDK(): String {
     return try {
-        // send request to horizon server
-        val server = Server("https://horizon.stellar.org")
-        val horizonResp = server.root().execute()
-        if (horizonResp == null || horizonResp.networkPassphrase != Network.PUBLIC.networkPassphrase) {
-            throw Exception("Query Horizon failed")
-        }
-
-        // send request to Soroban RPC server
-        val sorobanServer = SorobanServer("https://soroban-testnet.stellar.org:443")
-        if (sorobanServer.network.passphrase != Network.TESTNET.networkPassphrase) {
-            throw Exception("Query Soroban Server failed")
-        }
-
-        // Test Federation
         // Not enabled if Android SDK version is less than 26,
         // see https://stackoverflow.com/questions/64844311/certpathvalidatorexception-connecting-to-a-lets-encrypt-host-on-android-m-or-ea
         if (Build.VERSION.SDK_INT >= 26) {
+            // send request to horizon server
+            val server = Server("https://horizon.stellar.org")
+            val horizonResp = server.root().execute()
+            if (horizonResp == null || horizonResp.networkPassphrase != Network.PUBLIC.networkPassphrase) {
+                throw Exception("Query Horizon failed")
+            }
+
+            // send request to Soroban RPC server
+            val sorobanServer = SorobanServer("https://soroban-testnet.stellar.org:443")
+            if (sorobanServer.network.passphrase != Network.TESTNET.networkPassphrase) {
+                throw Exception("Query Soroban Server failed")
+            }
+
+            val xdr =
+                server.transactions().limit(1).includeFailed(false).execute().records.get(0).envelopeXdr
+            val tx: Transaction = Transaction.fromEnvelopeXdr(xdr, Network.PUBLIC) as Transaction
+            val resp = server.submitTransaction(tx)
+            Log.d("MainActivity", "testSDK resp: $resp")
+
+            // Test Federation
             val fedResp = Federation().resolveAddress("example*lobstr.co")
             if (fedResp == null || fedResp.accountId == null) {
                 throw Exception("Query Federation failed")
@@ -280,13 +351,6 @@ private fun testSDK(): String {
             .rootInvocation(invocation)
             .build()
         Auth.authorizeEntry(entry.toXdrBase64(), signer, validUntilLedgerSeq, network)
-
-        // send real transaction
-        val xdr =
-            server.transactions().limit(1).includeFailed(false).execute().records.get(0).envelopeXdr
-        val tx: Transaction = Transaction.fromEnvelopeXdr(xdr, Network.PUBLIC) as Transaction
-        val resp = server.submitTransaction(tx)
-        Log.d("MainActivity", "testSDK resp: $resp")
         "SUCCESS"
     } catch (e: Exception) {
         Log.e("MainActivity", "testSDK ERROR", e)
