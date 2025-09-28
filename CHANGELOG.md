@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.0
+* Bump `java-stellar-sdk` from 2.0.0 to 2.1.0
+
 ## 2.0.0
 * Bump `java-stellar-sdk` from 2.0.0-beta3 to 2.0.0
 
