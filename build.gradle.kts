@@ -3,9 +3,9 @@ plugins {
     id("signing")
     id("maven-publish")
     id("project-report")
-    id("com.diffplug.spotless") version "7.2.1"
-    id("com.github.ben-manes.versions") version "0.52.0"
-    id("com.gradleup.nmcp.aggregation").version("1.0.2")
+    id("com.diffplug.spotless") version "8.4.0"
+    id("com.github.ben-manes.versions") version "0.54.0"
+    id("com.gradleup.nmcp").version("1.4.4")
 }
 
 group = "network.lightsail"
@@ -13,7 +13,9 @@ version = "2.2.3"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        // Build with the current LTS JDK while keeping published artifacts
+        // compatible with Java 8 bytecode via `options.release = 8`.
+        languageVersion = JavaLanguageVersion.of(21)
     }
     withJavadocJar()
     withSourcesJar()
@@ -46,6 +48,7 @@ tasks {
 
     compileJava {
         options.encoding = "UTF-8"
+        options.release = 8
     }
 
     compileTestJava {
@@ -107,8 +110,8 @@ signing {
     sign(publishing.publications["mavenJava"])
 }
 
-nmcpAggregation {
-    centralPortal {
+nmcp {
+    publishAllPublicationsToCentralPortal {
         username = System.getenv("SONATYPE_USERNAME")
         password = System.getenv("SONATYPE_PASSWORD")
         // publish manually from the portal
@@ -116,7 +119,4 @@ nmcpAggregation {
         // or if you want to publish automatically
         // publishingType = "AUTOMATIC"
     }
-
-    // Publish all projects that apply the 'maven-publish' plugin
-    publishAllProjectsProbablyBreakingProjectIsolation()
 }
