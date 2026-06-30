@@ -3,9 +3,9 @@ plugins {
     id("signing")
     id("maven-publish")
     id("project-report")
-    id("com.diffplug.spotless") version "8.4.0"
+    id("com.diffplug.spotless") version "8.7.0"
     id("com.github.ben-manes.versions") version "0.54.0"
-    id("com.gradleup.nmcp").version("1.4.4")
+    id("com.gradleup.nmcp").version("1.6.0")
 }
 
 group = "network.lightsail"
