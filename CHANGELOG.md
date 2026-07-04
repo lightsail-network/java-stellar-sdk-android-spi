@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.0
+* Bump `java-stellar-sdk` from 4.0.0-beta0 to 4.0.0
+
 ## 4.0.0-beta0
 * Bump `java-stellar-sdk` from 3.1.0 to 4.0.0-beta0
 
