@@ -6,6 +6,9 @@ on:
       - main
       - release-*
   pull_request:
+  # Lets update-version.yml run the tests on the pull request it opens. A pull request created
+  # with GITHUB_TOKEN does not trigger `pull_request` workflows, but it may dispatch this one.
+  workflow_dispatch:
   release:
     types:
       - created
